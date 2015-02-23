@@ -125,13 +125,11 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
 
               if (appendToBody) {
                 var box = {
-                  top: 5,
                   left: 5,
-                  width: angular.element($window).width() - 5,
-                  height: angular.element($window).height() - 5
+                  width: angular.element($window).width() - 5
                 };
-                var ttArrow = tooltip.find('.tooltip-arrow');
 
+                var ttArrow = tooltip.find('.tooltip-arrow');
                 var ttWidth = tooltip.width();
                 var diffX = Math.abs((ttPosition.left + ttWidth) - box.width);
 
