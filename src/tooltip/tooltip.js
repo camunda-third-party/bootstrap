@@ -36,9 +36,9 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
    *     $tooltipProvider.options( { placement: 'left' } );
    *   });
    */
-	this.options = function( value ) {
-		angular.extend( globalOptions, value );
-	};
+  this.options = function( value ) {
+    angular.extend( globalOptions, value );
+  };
 
   /**
    * This allows you to extend the set of trigger mappings available. E.g.:
@@ -122,8 +122,38 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
             var positionTooltip = function () {
 
               var ttPosition = $position.positionElements(element, tooltip, scope.tt_placement, appendToBody);
-              ttPosition.top += 'px';
-              ttPosition.left += 'px';
+
+              if (appendToBody) {
+                var box = {
+                  top: 5,
+                  left: 5,
+                  width: angular.element($window).width() - 5,
+                  height: angular.element($window).height() - 5
+                };
+                var ttArrow = tooltip.find('.tooltip-arrow');
+
+                var ttWidth = tooltip.width();
+                var diffX = Math.abs((ttPosition.left + ttWidth) - box.width);
+
+                if (ttPosition.left < box.left) {
+                  ttArrow.css('left', ((ttWidth  / 2) + (ttPosition.left - box.left)) + 'px');
+                  ttPosition.left = box.left +'px';
+                }
+                else if ((ttPosition.left + ttWidth) > box.width) {
+                  var ttArrowLeft = (ttWidth / 2) + Math.abs(box.width - (ttPosition.left + ttWidth));
+                  ttArrow.css('left', ttArrowLeft + 'px');
+                  ttPosition.left = (ttPosition.left - diffX) + 'px';
+                }
+                else {
+                  ttPosition.left += 'px';
+                }
+
+                ttPosition.top += 'px';
+              }
+              else {
+                ttPosition.top += 'px';
+                ttPosition.left += 'px';
+              }
 
               // Now set the calculated positioning.
               tooltip.css( ttPosition );
@@ -186,7 +216,7 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
               // Set the initial positioning.
               tooltip.css({ top: 0, left: 0, display: 'block' });
 
-              // Now we add it to the DOM because need some info about it. But it's not 
+              // Now we add it to the DOM because need some info about it. But it's not
               // visible yet anyway.
               if ( appendToBody ) {
                   $document.find( 'body' ).append( tooltip );
@@ -214,7 +244,7 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
               $timeout.cancel( popupTimeout );
               popupTimeout = null;
 
-              // And now we remove it from the DOM. However, if we have animation, we 
+              // And now we remove it from the DOM. However, if we have animation, we
               // need to wait for it to expire beforehand.
               // FIXME: this is a placeholder for a port of the transitions library.
               if ( scope.tt_animation ) {
